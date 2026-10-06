@@ -134,7 +134,7 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 #st{padding:14px 0}
 #st .box{position:relative;box-shadow:0 14px 36px #5a382066}
 #cpuset>.go{position:sticky;bottom:6px;box-shadow:0 8px 18px #0006}
-.hero{position:relative;margin:-24px -18px 12px;padding:16px 12px 16px;text-align:center;color:#fff;background:linear-gradient(160deg,#dcae7e,#b98350);border-radius:22px 22px 26px 26px;box-shadow:0 4px 0 #94653a,inset 0 1px 2px #fff7}
+.hero{position:relative;margin:-24px -18px 12px;padding:16px 12px 16px;text-align:center;color:#fff;background:linear-gradient(145deg,#8a5a34,#5a3820);border-radius:22px 22px 26px 26px;box-shadow:0 4px 0 #3a2210,inset 0 1px 2px #fff5}
 .pcs{display:flex;justify-content:center;align-items:flex-end;gap:4px;height:62px}
 .ico{width:42px;height:50px;background:var(--img) center/contain no-repeat;filter:drop-shadow(0 3px 3px #0006);animation:bob 2.4s ease-in-out infinite}
 .ico.big{width:54px;height:64px}
@@ -142,8 +142,8 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 @keyframes bob{50%{transform:translateY(-6px) rotate(4deg)}}
 .ttl{margin:6px 0 0;font-size:min(9.6vw,38px);line-height:1.14;font-weight:900;letter-spacing:.02em;font-family:"Hiragino Maru Gothic ProN","Rounded Mplus 1c","Yu Gothic",sans-serif;transform:rotate(-2deg)}
 .ttl span{display:block}
-.ttl .a{color:#fff3c8;text-shadow:0 3px 0 #a0601f,0 6px 10px #6b42203a}
-.ttl .b{color:#fff;text-shadow:0 3px 0 #9a5a28,0 6px 10px #6b42203a}
+.ttl .a{color:#ffd88a;text-shadow:0 3px 0 #8a4a14,0 7px 12px #0006}
+.ttl .b{color:#fff6e0;text-shadow:0 3px 0 #6f3a18,0 7px 12px #0006}
 .tag{display:inline-block;margin-top:12px;padding:5px 14px;background:#ffd23a;color:#3a1d00;font-weight:900;font-size:14px;border-radius:99px;box-shadow:0 3px 0 #c98f00}
 #st .qm{position:absolute;top:10px;right:10px;width:32px;height:32px;margin:0;padding:0;border:0;border-radius:50%;background:#ffffff33;color:#fff;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1}
 .help{margin:0 0 12px;padding:10px 12px;background:#fff8e1;border:2px dashed #f0c14b;border-radius:14px;text-align:left;font-size:13px;line-height:1.6;color:#4a3a10;animation:born .4s}
@@ -182,7 +182,7 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 <div id="cpuset">
 <h3>AIの強さ</h3><div class="row" id="dif"><button class="opt" data-v="0">イージー</button><button class="opt on" data-v="1">ノーマル</button><button class="opt" data-v="2">ハード</button><button class="opt" data-v="3">プロ</button></div>
 <h3>手数（おたがい）</h3><div class="row" id="len"><button class="opt" data-v="10">10手ずつ</button><button class="opt on" data-v="20">20手ずつ</button><button class="opt" data-v="30">30手ずつ</button></div>
-<p class="rule">「待った」は何度でも使えます。</p><button class="go" onclick="start()">ゲーム開始</button>
+<button class="go" onclick="start()">ゲーム開始</button>
 </div>
 <div id="onset" style="display:none">
 <p class="rule orule" style="margin:14px 0 4px">20手ずつ・待った無し・1手30秒（時間切れは負け）。<br>先手・後手はランダムで決まります。</p>
