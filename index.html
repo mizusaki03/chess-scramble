@@ -469,7 +469,7 @@ function cancelWait(){leaveOnline();onMsg("");init()}
 function leaveOnline(){
  if(inQueue&&fbd){fbd.ref("waiting").transaction(cur=>cur&&cur.cid===cid?null:undefined,()=>{},false);fbd.ref("waiting").onDisconnect().cancel();if(roomCode)fbd.ref("rooms/"+roomCode).onDisconnect().cancel();inQueue=false}
  if(roomRef){const r=roomRef,host=isHost;detach();if(host)r.remove().catch(()=>{})}
- document.documentElement.classList.remove("blk");
+ document.documentElement.classList.remove("blk");onMsg("");
  online=false;started=false;isHost=false;roomCode="";R0=null;
  $("onctl").style.display="";$("wait").style.display="none";
  $("tmw").textContent=$("tmk").textContent="";
@@ -488,7 +488,7 @@ function startOnline(side,S){
  gid++;snaps=[];sel=null;tg=[];last=[];over=false;busy=false;
  unpack(S);seqN=S.seq;R0=S;isNew=false;
  if(inQueue&&fbd){fbd.ref("waiting").onDisconnect().cancel();fbd.ref("rooms/"+roomCode).onDisconnect().cancel();inQueue=false}
- $("st").style.display="none";$("ov").style.display="none";$("undo").style.display="none";
+ $("st").style.display="none";$("ov").style.display="none";$("undo").style.display="none";onMsg("");
  say(S.msg);draw();startMyTurn();
  document.documentElement.classList.toggle("blk",me=="k");intro();
 }
@@ -539,6 +539,6 @@ function setMode(i){
 }
 document.querySelectorAll("#dif .opt,#len .opt").forEach(x=>x.onclick=()=>{x.parentNode.querySelectorAll(".opt").forEach(y=>y.classList.remove("on"));x.classList.add("on")});
 function start(){leaveOnline();diff=+document.querySelector("#dif .on").dataset.v;MAX=+document.querySelector("#len .on").dataset.v;$("st").style.display="none";init()}
-function openSet(){$("cx").style.display="inline-block";$("st").style.display="flex"}
+function openSet(){if(!inQueue)onMsg("");$("cx").style.display="inline-block";$("st").style.display="flex"}
 init();$("st").style.display="flex";
 </script></body></html>
