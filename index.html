@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>奪い合いチェス</title>
+<title>キャプチャー スクランブル</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bs:min(96vw,520px,calc(100vh - 250px));--in:calc(var(--bs) - 12px);--cs:calc(var(--in)/8);--bg1:#f6f2ea;--bg2:#e2dccf;--fg:#2b2a28;--card:#ffffffcc;--lt:#f1dfbf;--dk:#b98d62;--me:#2f6bff;--cpu:#e5473f}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#25242a;--bg2:#141318;--fg:#f1efe9;--card:#ffffff14}}
@@ -69,14 +69,14 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 #ov{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:9}
 #ov div{background:linear-gradient(160deg,#fff,#f2ead8);color:#222;padding:30px 36px;border-radius:22px;text-align:center;animation:born .6s}
 #ov h2{margin:0 0 8px;font-size:30px}#ov p{margin:0;font-size:20px;font-weight:700}
-#ov button{font-size:18px;font-weight:700;padding:12px 28px;border:0;border-radius:99px;background:linear-gradient(90deg,#2f6bff,#6a4cff);color:#fff;margin-top:18px}
-#st{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:10;overflow:auto}
+#ov button{font-size:18px;font-weight:700;padding:12px 28px;border:0;border-radius:99px;background:linear-gradient(90deg,#3d7bff,#2358d6);color:#fff;margin-top:18px}
+#st{position:fixed;inset:0;background:radial-gradient(circle at 50% 0,#9a6a40 0,#5a3820 52%,#241208 100%);display:none;align-items:center;justify-content:center;z-index:10;overflow:auto}
 #st .box{background:linear-gradient(160deg,#fff,#f2ead8);color:#222;padding:26px 24px;border-radius:22px;text-align:center;width:min(92vw,380px);animation:born .5s}
 #st h2{margin:0 0 6px;font-size:26px}#st h3{margin:18px 0 8px;font-size:14px;opacity:.7}
 #st .row{display:flex;gap:8px}
 #st .opt{flex:1;font-size:15px;font-weight:700;padding:12px 4px;border:2px solid #d8cdb6;border-radius:12px;background:#fff;color:#444}
 #st .opt.on{border-color:#2f6bff;background:#2f6bff;color:#fff}
-#st .go{width:100%;margin-top:24px;font-size:18px;font-weight:700;padding:13px;border:0;border-radius:99px;background:linear-gradient(90deg,#2f6bff,#6a4cff);color:#fff}
+#st .go{width:100%;margin-top:24px;font-size:18px;font-weight:700;padding:13px;border:0;border-radius:99px;background:linear-gradient(90deg,#3d7bff,#2358d6);color:#fff}
 #st .cx{margin-top:10px;background:none;border:0;color:#666;font-size:14px;display:none}
 #gear{margin-top:8px;background:var(--card);color:var(--fg);font-size:14px;padding:6px 14px;border:0;border-radius:99px}
 .bar{width:var(--bs);display:flex;align-items:center;justify-content:space-between;margin-top:8px}
@@ -130,6 +130,36 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 #st .go3{width:100%;font-size:16px;font-weight:700;padding:12px;border:2px solid #2f6bff;border-radius:99px;background:#fff;color:#2f6bff;margin:0}
 .spin{display:inline-block;width:14px;height:14px;border:3px solid #2f6bff55;border-top-color:#2f6bff;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes sp{to{transform:rotate(360deg)}}
+#st::before{content:"";position:fixed;inset:0;opacity:.16;pointer-events:none;background:conic-gradient(#f1dfbf 25%,#b98d62 0 50%,#f1dfbf 0 75%,#b98d62 0) 0 0/72px 72px}
+#st{padding:14px 0}
+#st .box{position:relative;box-shadow:0 14px 40px #0008}
+#cpuset>.go{position:sticky;bottom:6px;box-shadow:0 8px 18px #0006}
+.hero{position:relative;margin:-24px -18px 12px;padding:16px 12px 16px;text-align:center;color:#fff;background:linear-gradient(160deg,#9a6a40,#5a3820);border-radius:22px 22px 26px 26px;box-shadow:0 4px 0 #3a2210,inset 0 1px 2px #fff5}
+.pcs{display:flex;justify-content:center;align-items:flex-end;gap:4px;height:62px}
+.ico{width:42px;height:50px;background:var(--img) center/contain no-repeat;filter:drop-shadow(0 3px 3px #0006);animation:bob 2.4s ease-in-out infinite}
+.ico.big{width:54px;height:64px}
+.ico:nth-child(2){animation-delay:-.5s}.ico:nth-child(3){animation-delay:-1s}.ico:nth-child(4){animation-delay:-1.5s}.ico:nth-child(5){animation-delay:-2s}
+@keyframes bob{50%{transform:translateY(-6px) rotate(4deg)}}
+.ttl{margin:6px 0 0;font-size:min(9.6vw,38px);line-height:1.14;font-weight:900;letter-spacing:.02em;font-family:"Hiragino Maru Gothic ProN","Rounded Mplus 1c","Yu Gothic",sans-serif;transform:rotate(-2deg)}
+.ttl span{display:block}
+.ttl .a{color:#ffd88a;text-shadow:0 3px 0 #8a4a14,0 7px 12px #0007}
+.ttl .b{color:#fff6e0;text-shadow:0 3px 0 #6f3a18,0 7px 12px #0007}
+.tag{display:inline-block;margin-top:12px;padding:5px 14px;background:#ffd23a;color:#3a1d00;font-weight:900;font-size:14px;border-radius:99px;box-shadow:0 3px 0 #c98f00}
+#st .qm{position:absolute;top:10px;right:10px;width:32px;height:32px;margin:0;padding:0;border:0;border-radius:50%;background:#ffffff33;color:#fff;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1}
+.help{margin:0 0 12px;padding:10px 12px;background:#fff8e1;border:2px dashed #f0c14b;border-radius:14px;text-align:left;font-size:13px;line-height:1.6;color:#4a3a10;animation:born .4s}
+.help p{margin:0 0 4px}.help b{color:#d6451a}
+.pts{display:flex;gap:12px;justify-content:center;font-weight:800;margin:8px 0 4px}
+.pts .lgi{width:17px;height:21px}
+.help .sm{font-size:11.5px;opacity:.75;margin:2px 0 0}
+@media (max-height:700px){.pcs{height:48px}.ico{width:34px;height:40px}.ico.big{width:44px;height:52px}.ttl{font-size:min(8.6vw,32px)}.hero{padding:12px 12px 12px}.tag{margin-top:8px}}
+.lgw{display:flex;flex-direction:column;gap:1px}
+.lgw small{font-size:9.5px;opacity:.6;font-weight:700;letter-spacing:.06em}
+.ptl{font-size:10.5px;opacity:.65;font-weight:700;text-align:center;margin-top:6px;letter-spacing:.06em}
+.chead{display:none}
+#st.compact .chead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+#st .chead h2{margin:0;font-size:min(5vw,17px);font-weight:900;color:#5a3820;white-space:nowrap}
+#st .qm2{width:30px;height:30px;margin:0;padding:0;border:0;border-radius:50%;background:#5a38201f;color:#5a3820;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1}
+#st.compact .hero,#st.compact .orule,#st.compact #cpuset .rule{display:none}
 </style></head><body>
 <div class="hud">
  <div class="pl cpu" id="pk"><div class="top"><small id="cn">CPU(黒)</small><small class="tm" id="tmk"></small></div><div class="sr"><b id="sk">0</b><small>残り<span id="rk">25</span>手</small></div></div>
@@ -137,18 +167,25 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 </div>
 <div class="wrap" id="wrap"><div id="board"></div><div id="fx"></div><div id="cd"></div><div id="intro"></div></div>
 <div id="msg"></div>
-<div class="bar"><div class="lg"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div><button id="undo" class="ub" onclick="undo()" disabled>↩ 待った</button><div><button id="snd" onclick="mute=!mute;this.textContent=mute?'🔇':'🔊'">🔊</button><button id="gear" onclick="openSet()" aria-label="設定">⚙</button></div></div>
+<div class="bar"><div class="lgw"><small>コマの価値</small><div class="lg"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div></div><button id="undo" class="ub" onclick="undo()" disabled>↩ 待った</button><div><button id="snd" onclick="mute=!mute;this.textContent=mute?'🔇':'🔊'">🔊</button><button id="gear" onclick="openSet()" aria-label="設定">⚙</button></div></div>
 <div id="tele">相手の手番を待っています…</div>
 <div id="ov"><div><h2 id="rt"></h2><p id="rs"></p><button id="ov1" onclick="init()">もう一度</button><button id="ov2" onclick="openSet()" style="background:#8a8a8a;margin-left:8px">設定を変える</button></div></div>
-<div id="st"><div class="box"><h2>奪い合いチェス</h2>
+<div id="st"><div class="box"><div class="chead"><h2>キャプチャー スクランブル</h2><button class="qm2" onclick="toggleHelp()" aria-label="あそびかた">？</button></div>
+<div class="hero"><button class="qm" onclick="toggleHelp()" aria-label="あそびかた">？</button>
+<div class="pcs"><i class="ico w tN"></i><i class="ico k tB"></i><i class="ico big w tQ"></i><i class="ico k tR"></i><i class="ico w tP"></i></div>
+<h1 class="ttl"><span class="a">キャプチャー</span><span class="b">スクランブル</span></h1>
+<div class="tag">キング無し！コマの奪い合い！</div></div>
+<div id="help" class="help"><p>限られた手数の中で多くのコマを奪った方が勝ち！</p><p>お互い3手指すごとにランダムで増える増援を使いこなそう！</p>
+<div class="ptl">コマの価値</div><div class="pts" style="margin-top:2px"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div>
+<p class="sm">ポーンは前に1歩・斜め前で取り、端でクイーンに昇格します。</p></div>
 <div class="row seg" id="mode"><button class="opt on" onclick="setMode(0)">CPUと対戦</button><button class="opt" onclick="setMode(1)">オンライン対戦</button></div>
 <div id="cpuset">
 <h3>AIの強さ</h3><div class="row" id="dif"><button class="opt" data-v="0">イージー</button><button class="opt on" data-v="1">ノーマル</button><button class="opt" data-v="2">ハード</button><button class="opt" data-v="3">プロ</button></div>
 <h3>手数（おたがい）</h3><div class="row" id="len"><button class="opt" data-v="10">10手ずつ</button><button class="opt on" data-v="20">20手ずつ</button><button class="opt" data-v="30">30手ずつ</button></div>
-<p class="rule">キング無し。駒を取ると得点。3手ごとに自分の駒がランダムな場所に出現します。ポーンは前に1歩・斜め前で取り、端でクイーンに昇格。「待った」は何度でも使えます。</p><button class="go" onclick="start()">ゲーム開始</button>
+<p class="rule">「待った」は何度でも使えます。</p><button class="go" onclick="start()">ゲーム開始</button>
 </div>
 <div id="onset" style="display:none">
-<p class="rule" style="margin:14px 0 4px">20手ずつ・待った無し・1手30秒（時間切れは負け）。<br>先手・後手はランダムで決まります。</p>
+<p class="rule orule" style="margin:14px 0 4px">20手ずつ・待った無し・1手30秒（時間切れは負け）。<br>先手・後手はランダムで決まります。</p>
 <div id="onctl"><button class="go" onclick="randomMatch()">ランダムマッチ</button>
 <h3>部屋コードで遊ぶ</h3><button class="go3" onclick="createRoom()">部屋を作る</button>
 <div class="row" style="margin-top:10px"><input id="code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters"><button class="go2" onclick="joinRoom()">入る</button></div></div>
@@ -161,7 +198,7 @@ const V={Q:9,R:5,B:3,N:3,P:1},G={Q:"♛",R:"♜",B:"♝",N:"♞",P:"♟\uFE0E"};
 const LB={Q:"クイーン撃破!!",R:"ルーク撃破!",B:"ビショップ撃破!",N:"ナイト撃破!",P:"ゲット!"};
 let MAX=20,diff=1,gid=0,snaps=[];const DN=["イージー","ノーマル","ハード","プロ"];
 let b,turn,mv,sc,sel,last,fresh,over,busy,tg,st,fxq,isNew,mute=false,AC;
-let online=false,me="w",opp="k",flip=false,evFx=[],seqN=0,fbd=null,roomRef=null,roomCode="",R0=null,offMs=0,cid="",tickT=null,toSeq=-1,started=false,isHost=false,tickSec=0,inQueue=false;
+let online=false,me="w",opp="k",flip=false,evFx=[],seqN=0,fbd=null,roomRef=null,roomCode="",R0=null,offMs=0,cid="",tickT=null,toSeq=-1,started=false,isHost=false,tickSec=0,inQueue=false,played=false;
 const TURN_MS=30000,N=s=>"{"+s+"}",D=v=>flip?7-v:v;
 const $=id=>document.getElementById(id),R=n=>Math.floor(Math.random()*n);
 const nm={w:"あなた",k:"CPU"};
@@ -345,7 +382,7 @@ function fx(q){
  vib(big?[30,30,70]:mid?[25,20,35]:20);
 }
 function finish(res){
- over=true;
+ over=true;played=true;
  const who=online?"相手":"CPU";let t;
  if(res&&res.left)t="🎉 相手が退出しました。あなたの勝ち";
  else if(res)t=res.loser==me?"⏰ 時間切れで負け…":"🎉 相手が時間切れ！あなたの勝ち";
@@ -533,12 +570,14 @@ function declareTimeout(){
  const q=seqN;if(!roomRef)return;
  roomRef.child("state").transaction(cur=>{if(cur===null)return cur;if(cur.seq!==q||cur.result||cur.fin)return;cur.result={loser:cur.turn,at:sNow()};return cur},()=>{},false);
 }
+function toggleHelp(){const h=$("help");h.style.display=h.style.display=="none"?"block":"none"}
+(function(){let seen=false;try{seen=localStorage.getItem("cs_seen")==="1";if(!seen)localStorage.setItem("cs_seen","1")}catch(e){}$("help").style.display=seen?"none":"block"})();
 function setMode(i){
  document.querySelectorAll("#mode .opt").forEach((x,j)=>x.classList.toggle("on",j==i));
  $("cpuset").style.display=i?"none":"";$("onset").style.display=i?"":"none";
 }
 document.querySelectorAll("#dif .opt,#len .opt").forEach(x=>x.onclick=()=>{x.parentNode.querySelectorAll(".opt").forEach(y=>y.classList.remove("on"));x.classList.add("on")});
 function start(){leaveOnline();diff=+document.querySelector("#dif .on").dataset.v;MAX=+document.querySelector("#len .on").dataset.v;$("st").style.display="none";init()}
-function openSet(){if(!inQueue)onMsg("");$("cx").style.display="inline-block";$("st").style.display="flex"}
+function openSet(){if(!inQueue)onMsg("");$("st").classList.toggle("compact",played);if(played)$("help").style.display="none";$("cx").style.display="inline-block";$("st").style.display="flex"}
 init();$("st").style.display="flex";
 </script></body></html>
