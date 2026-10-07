@@ -2,6 +2,7 @@
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>キャプチャー スクランブル</title>
+<link rel="icon" href="https://mizusaki03.github.io/chess-scramble/favicon.ico">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bs:min(96vw,520px,calc(100vh - 250px));--in:calc(var(--bs) - 12px);--cs:calc(var(--in)/8);--bg1:#f6f2ea;--bg2:#e2dccf;--fg:#2b2a28;--card:#ffffffcc;--lt:#f1dfbf;--dk:#b98d62;--me:#2f6bff;--cpu:#e5473f}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#25242a;--bg2:#141318;--fg:#f1efe9;--card:#ffffff14}}
@@ -200,6 +201,14 @@ body{background-attachment:fixed;background-repeat:no-repeat}
 #cur{position:fixed;inset:0;z-index:40;display:none;background:linear-gradient(135deg,#8a5a34,#5a3820)}
 #cur::before{content:"";position:absolute;inset:0;opacity:.16;background:conic-gradient(#f1dfbf 25%,#b98d62 0 50%,#f1dfbf 0 75%,#b98d62 0) 0 0/72px 72px}
 #cur::after{content:"";position:absolute;left:50%;top:50%;width:64px;height:76px;margin:-38px 0 0 -32px;background:var(--img) center/contain no-repeat;filter:drop-shadow(0 4px 6px #0007)}
+*{touch-action:manipulation}
+#win{position:fixed;inset:0;z-index:30;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#000a,#0000 78%);cursor:pointer;overflow:hidden}
+#win .wt{font-size:min(30vw,150px);line-height:1;font-weight:900;letter-spacing:.04em;color:transparent;background:linear-gradient(180deg,#fff6c2 0%,#ffc21a 58%,#ff8a00 100%);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 6px 0 #8a4a00) drop-shadow(0 12px 18px #0008);animation:winpop .9s cubic-bezier(.2,1.6,.4,1) both}
+#win .ws{margin-top:14px;font-size:min(7.5vw,32px);font-weight:900;color:#fff;text-shadow:0 3px 0 #5a3820,0 6px 14px #0008;animation:wsin .6s .45s both}
+@keyframes winpop{0%{transform:scale(.1) rotate(-14deg);opacity:0}60%{transform:scale(1.18) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes wsin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#wconf i{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
 </style></head><body>
 <div class="hud">
  <div class="pl cpu" id="pk"><div class="top"><small id="cn">CPU(黒)</small><small class="tm" id="tmk"></small></div><div class="sr"><b id="sk">0</b><small>残り<span id="rk">25</span>手</small></div></div>
@@ -212,6 +221,7 @@ body{background-attachment:fixed;background-repeat:no-repeat}
 <div class="rvn"><button id="rvf" class="jmp" aria-label="最初へ"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 5h2.5v14H6zM19 5v14l-10-7z" fill="currentColor"/></svg></button><button id="rvl" aria-label="前の手"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M16 5v14l-10-7z" fill="currentColor"/></svg></button><span id="rvn"></span><button id="rvr" aria-label="次の手"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 5v14l10-7z" fill="currentColor"/></svg></button><button id="rve" class="jmp" aria-label="最後へ"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15.5 5H18v14h-2.5zM5 5v14l10-7z" fill="currentColor"/></svg></button></div>
 <div class="rvb"><button id="rv1">もう一度</button><button id="rv3">結果</button><button id="rv2">メニューへ</button></div>
 <div id="rvst"></div></div>
+<div id="win"><div class="wt">WIN</div><div class="ws" id="wsc"></div><div id="wconf"></div></div>
 <div id="cur" class="w tQ"></div>
 <div id="tele">相手の手番を待っています…</div>
 <div id="ov"><div><h2 id="rt"></h2><p id="rs"></p><p id="rm" class="rmsg"></p><div class="ovb"><button id="ov1" onclick="init()">もう一度</button><button id="ov3" onclick="enterReview()">振り返る</button><button id="ov2" onclick="openSet()" style="background:#8a8a8a">設定を変える</button></div></div></div>
@@ -463,9 +473,11 @@ function finish(res){
  clearInterval(rmTimer);rmWait=false;rmOpp=false;$("rm").textContent="";
  if(online){const gone=!!(res&&res.left);roomGone=gone;
   o1.textContent="続けて遊ぶ";o1.disabled=false;o1.style.display=gone?"none":"";o1.onclick=rematch;
-  o2.textContent="メニューへ";o2.style.display="";o2.onclick=()=>{leaveOnline();$("ov").style.display="none";openSet()}}
+  o2.textContent="トップへ";o2.style.display="";o2.onclick=goTop}
  else{o1.textContent="もう一度";o1.disabled=false;o1.style.display="";o1.onclick=init;o2.textContent="設定を変える";o2.style.display="";o2.onclick=openSet}
- const g=gid;setTimeout(()=>{if(g==gid){$("ov").style.display="flex";draw()}},res?300:1100);
+ const g=gid,won=res?(res.left||res.loser!=me):sc[me]>sc[opp];
+ const showDlg=()=>{if(g==gid){$("ov").style.display="flex";draw()}};
+ setTimeout(()=>{if(g!=gid)return;if(won)winFx(showDlg);else showDlg()},res?300:1100);
  if(online&&isHost)setTimeout(()=>{if(g==gid&&online&&isHost&&roomRef){const r=roomRef;detach();r.remove().catch(()=>{})}},90000);
 }
 // ===== オンライン対戦（Firebase Realtime Database）=====
@@ -488,7 +500,7 @@ async function fbInit(){
 }
 async function prep(){
  onMsg("接続中…");
- try{await fbInit();return true}catch(e){onMsg("Firebaseの読み込みに失敗しました。ネットワークや公開場所（GitHub Pagesなど）を確認してください",1);return false}
+ try{await fbInit();return true}catch(e){onMsg("ネットワークエラーです。",1);return false}
 }
 
 function unpack(S){
@@ -499,7 +511,7 @@ function unpack(S){
  fresh=S.fresh?S.fresh.split(";"):[];fxq=JSON.parse(S.fx||"[]");
 }
 function withTimeout(start,ms=10000){return new Promise(res=>{const to=setTimeout(()=>res({to:1}),ms);start((e,c,snap)=>{clearTimeout(to);res({e,c,v:snap&&snap.val()})})})}
-const errTxt=r=>r.to?"接続できません。databaseURL（Firebaseの設定）やネットワークを確認してください":("接続エラー: "+(r.e.code||r.e.message||r.e));
+const errTxt=()=>"ネットワークエラーです。";
 async function makeRoom(){
  curRd=0;
  const S0=freshState(freshBoard(),0);
@@ -739,6 +751,19 @@ function rvStep(d){
  if(!rvOn)return;const n=Math.max(0,Math.min(hist.length-1,rv+d));
  if(n!==rv){rv=n;if(d<0)snd(520,.05,"triangle",.06);renderReview(d>0)}
 }
+// 勝ったとき: WIN＋点数を大きく見せてから結果ダイアログへ（タップで飛ばせる）
+function winFx(done){
+ const w=$("win");let fin=false;
+ const end=()=>{if(fin)return;fin=true;w.style.display="none";w.onclick=null;$("wconf").innerHTML="";done()};
+ $("wsc").textContent=`あなた ${sc[me]} - ${sc[opp]} ${online?"相手":"CPU"}`;
+ w.style.display="flex";w.onclick=end;
+ const t=w.querySelector(".wt");t.style.animation="none";void t.offsetWidth;t.style.animation="";
+ const cs=["#ffd23a","#fff","#4f8aff","#ff5a50","#ffb15a"];let h="";
+ for(let i=0;i<44;i++)h+=`<i style="left:${R(100)}%;background:${cs[R(cs.length)]};--dx:${R(160)-80}px;--rot:${R(900)-450}deg;animation-duration:${1.5+Math.random()*1.3}s;animation-delay:${Math.random()*.7}s"></i>`;
+ $("wconf").innerHTML=h;
+ [523,659,784,1047].forEach((n,i)=>snd(n,.22,"triangle",.12,i*.1));snd(1319,.6,"triangle",.1,.42);vib([40,40,90]);
+ setTimeout(end,2500);
+}
 function rvJump(n){
  if(!rvOn||n===rv)return;
  rv=Math.max(0,Math.min(hist.length-1,n));snd(420,.08,"triangle",.07);renderReview(false);
@@ -771,6 +796,13 @@ function curtain(fn){
  return true;
 }
 function init(){curtain(initGame)}
+// タイトル（トップ）画面へ戻す。オンライン後に設定を開くと盤面が崩れていたため、盤面ごと初期化する
+function goTop(){
+ leaveOnline();$("ov").style.display="none";exitReview();
+ initGame();
+ const st=$("st");st.classList.remove("compact");$("cx").style.display="none";onMsg("");setMode(0);
+ st.style.display="flex";
+}
 function setMode(i){
  document.querySelectorAll("#mode .opt").forEach((x,j)=>x.classList.toggle("on",j==i));
  $("cpuset").style.display=i?"none":"";$("onset").style.display=i?"":"none";
