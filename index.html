@@ -67,9 +67,7 @@ body{margin:0;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2));
 .sub{font-size:12px;opacity:.7;text-align:center;width:var(--bs);line-height:1.6;margin-top:8px}
 .lg{display:flex;justify-content:center;gap:10px;margin-top:4px;font-weight:700}
 #snd{margin-top:8px;background:var(--card);color:var(--fg);font-size:14px;padding:6px 14px;border:0;border-radius:99px}
-#ov{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:9}
-#ov div{background:linear-gradient(160deg,#fff,#f2ead8);color:#222;padding:30px 36px;border-radius:22px;text-align:center;animation:born .6s}
-#ov h2{margin:0 0 8px;font-size:30px}#ov p{margin:0;font-size:20px;font-weight:700}
+#ov{position:fixed;inset:0;overflow:auto;padding:14px 0;background:#000a;display:none;align-items:center;justify-content:center;z-index:9}
 #ov button{font-size:18px;font-weight:700;padding:12px 28px;border:0;border-radius:99px;background:linear-gradient(90deg,#3d7bff,#2358d6);color:#fff;margin-top:18px}
 #st{position:fixed;inset:0;background:radial-gradient(circle at 50% 0,#ecc9a0 0,#d2a577 55%,#b88555 100%);display:none;align-items:center;justify-content:center;z-index:10;overflow:auto}
 #st .box{background:linear-gradient(160deg,#fff,#f2ead8);color:#222;padding:26px 24px;border-radius:22px;text-align:center;width:min(92vw,380px);animation:born .5s}
@@ -209,6 +207,43 @@ body{background-attachment:fixed;background-repeat:no-repeat}
 @keyframes wsin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 #wconf i{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
+.fc .lb.gl{background:linear-gradient(90deg,#56628a,#262e4a);color:#e3e9ff;box-shadow:0 2px 8px #000a}
+button:disabled{pointer-events:none}
+.wrow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:nowrap}
+.wrow #wcode{font-size:min(10.5vw,42px);margin:4px 0 2px}
+#st #cp{margin:0;padding:7px 12px;font-size:13px;font-weight:800;border:2px solid #2f6bff;border-radius:99px;background:#fff;color:#2358d6;display:flex;align-items:center;gap:5px;animation:none;white-space:nowrap}
+#st #cp svg{flex:none}
+.rbox{position:relative;width:min(92vw,360px);margin:auto;padding:24px 18px 18px;border-radius:26px;background:linear-gradient(160deg,#fff,#f2ead8);color:#222;text-align:center;box-shadow:0 14px 36px #0007;animation:born .6s}
+.rhero{position:relative;overflow:hidden;margin:-24px -18px 14px;padding:16px 12px 14px;border-radius:26px;background:linear-gradient(145deg,#8a5a34,#5a3820);box-shadow:0 4px 0 #3a2210,inset 0 1px 2px #fff5;color:#fff}
+.rhero::before{content:"";position:absolute;inset:0;opacity:.12;background:conic-gradient(#f1dfbf 25%,#b98d62 0 50%,#f1dfbf 0 75%,#b98d62 0) 0 0/56px 56px}
+.rbox.lose .rhero{background:linear-gradient(145deg,#74685c,#3b332c);box-shadow:0 4px 0 #231e19,inset 0 1px 2px #fff4}
+.rpc{position:relative;height:108px;display:flex;align-items:flex-end;justify-content:center;gap:12px}
+.rp{position:relative;display:block;width:78px;height:92px;background:var(--img) center bottom/contain no-repeat;filter:drop-shadow(0 4px 5px #0007);transform-origin:50% 100%}
+.rbox.win .rpc::after{content:"";position:absolute;bottom:-3px;left:50%;width:64px;height:9px;margin-left:-32px;border-radius:50%;background:#0007;filter:blur(3px);animation:gshadow 1.15s ease-in-out infinite}
+#rbox #rt{position:relative;margin:8px 0 0;font-size:min(7vw,28px);font-weight:900;font-family:"Hiragino Maru Gothic ProN","Rounded Mplus 1c","Yu Gothic",sans-serif;color:#fff6e0;text-shadow:0 3px 0 #6f3a18,0 6px 10px #0006}
+.rbox.win #rt{color:#ffd88a;text-shadow:0 3px 0 #8a4a14,0 6px 10px #0006}
+.rbox.lose #rt{color:#ece3d6;text-shadow:0 2px 0 #2c2620,0 5px 8px #0006}
+#rs{margin:4px 0 6px}
+.rsc{display:flex;align-items:center;justify-content:center;gap:14px}
+.rsc div{display:flex;flex-direction:column;align-items:center;min-width:92px}
+.rsc small{font-size:12px;font-weight:700;opacity:.65}
+.rsc b{font-size:46px;line-height:1.05;font-weight:900;font-variant-numeric:tabular-nums}
+.rsc div:first-child b{color:#2f6bff}.rsc div:last-child b{color:#e5473f}
+.rsc i{font-style:normal;font-size:30px;font-weight:900;opacity:.35}
+.rbox.win .rp{animation:cheer 1.15s ease-in-out infinite}
+.rbox.lose .rp{transform-origin:85% 100%;animation:tumble 1.3s ease-in forwards}
+.rbox.draw .rp{animation:bob 2.4s ease-in-out infinite}
+.rbox.draw .rp+.rp{animation-delay:-1.2s}
+@keyframes cheer{0%,100%{transform:translateY(0) scale(1.12,.88)}12%{transform:translateY(0) scale(.94,1.08)}40%{transform:translateY(-30px) scale(.96,1.06) rotate(-4deg)}62%{transform:translateY(0) scale(1.12,.88)}72%{transform:translateY(-10px) scale(1) rotate(3deg)}85%{transform:translateY(0) scale(1.04,.96)}}
+@keyframes gshadow{0%,100%{transform:scaleX(1);opacity:.7}40%{transform:scaleX(.55);opacity:.35}}
+@keyframes tumble{0%{transform:rotate(0)}18%{transform:rotate(-7deg)}34%{transform:rotate(5deg)}48%{transform:rotate(-3deg)}72%{transform:translate(8px,0) rotate(88deg)}84%{transform:translate(10px,3px) rotate(78deg)}100%{transform:translate(10px,3px) rotate(86deg)}}
+.sp{position:absolute;width:9px;height:9px;border-radius:2px;background:#ffe27a;box-shadow:0 0 8px #ffd23a;opacity:0;animation:twk 1.1s ease-in-out infinite}
+@keyframes twk{0%,100%{opacity:0;transform:scale(.2) rotate(45deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+/* 音・設定・待ったは画像（SVG）アイコン */
+#snd .off{display:none}#snd.muted .on{display:none}#snd.muted .off{display:block}
+.bar #snd svg,.bar #gear svg{display:block}
+.bar .ub{display:flex;align-items:center;justify-content:center;gap:6px}
+.bar .ub svg{flex:none}
 </style></head><body>
 <div class="hud">
  <div class="pl cpu" id="pk"><div class="top"><small id="cn">CPU(黒)</small><small class="tm" id="tmk"></small></div><div class="sr"><b id="sk">0</b><small>残り<span id="rk">25</span>手</small></div></div>
@@ -216,7 +251,7 @@ body{background-attachment:fixed;background-repeat:no-repeat}
 </div>
 <div class="wrap" id="wrap"><div id="board"></div><div id="fx"></div><div id="cd"></div><div id="intro"></div></div>
 <div id="msg"></div>
-<div class="bar"><div class="lgw"><small>コマの価値</small><div class="lg"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div></div><button id="undo" class="ub" onclick="undo()" disabled>↩ 待った</button><div><button id="snd" onclick="mute=!mute;this.textContent=mute?'🔇':'🔊'">🔊</button><button id="gear" onclick="openSet()" aria-label="設定">⚙</button></div></div>
+<div class="bar"><div class="lgw"><small>駒の価値</small><div class="lg"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div></div><button id="undo" class="ub" onclick="undo()" disabled><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" width="18" height="18"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg><span>待った</span></button><div><button id="snd" aria-label="音" onclick="mute=!mute;this.classList.toggle('muted',mute)"><span class="on"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15.5 8.5a5 5 0 0 1 0 7M18.2 5.8a9 9 0 0 1 0 12.4"/></svg></span><span class="off"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></span></button><button id="gear" onclick="openSet()" aria-label="設定"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.4 7.4 0 0 0-1.62-.94l-.36-2.54A.48.48 0 0 0 13.9 2h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.61.22L2.68 8.47a.47.47 0 0 0 .12.64l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94L2.8 14.15a.47.47 0 0 0-.12.64l1.92 3.32c.12.22.37.29.61.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.49 0 .61-.22l1.92-3.32a.47.47 0 0 0-.12-.64l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button></div></div>
 <div id="rvbar" style="display:none">
 <div class="rvn"><button id="rvf" class="jmp" aria-label="最初へ"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 5h2.5v14H6zM19 5v14l-10-7z" fill="currentColor"/></svg></button><button id="rvl" aria-label="前の手"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M16 5v14l-10-7z" fill="currentColor"/></svg></button><span id="rvn"></span><button id="rvr" aria-label="次の手"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 5v14l10-7z" fill="currentColor"/></svg></button><button id="rve" class="jmp" aria-label="最後へ"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15.5 5H18v14h-2.5zM5 5v14l10-7z" fill="currentColor"/></svg></button></div>
 <div class="rvb"><button id="rv1">もう一度</button><button id="rv3">結果</button><button id="rv2">メニューへ</button></div>
@@ -224,14 +259,14 @@ body{background-attachment:fixed;background-repeat:no-repeat}
 <div id="win"><div class="wt">WIN</div><div class="ws" id="wsc"></div><div id="wconf"></div></div>
 <div id="cur" class="w tQ"></div>
 <div id="tele">相手の手番を待っています…</div>
-<div id="ov"><div><h2 id="rt"></h2><p id="rs"></p><p id="rm" class="rmsg"></p><div class="ovb"><button id="ov1" onclick="init()">もう一度</button><button id="ov3" onclick="enterReview()">振り返る</button><button id="ov2" onclick="openSet()" style="background:#8a8a8a">設定を変える</button></div></div></div>
+<div id="ov"><div class="rbox draw" id="rbox"><div class="rhero"><div class="rpc" id="rpc"></div><h2 id="rt"></h2></div><div id="rs"></div><p id="rm" class="rmsg"></p><div class="ovb"><button id="ov1" onclick="init()">もう一度</button><button id="ov3" onclick="enterReview()">振り返る</button><button id="ov2" onclick="openSet()" style="background:#8a8a8a">設定を変える</button></div></div></div>
 <div id="st"><div class="box"><div class="chead"><h2>キャプチャー スクランブル</h2><button class="qm2" onclick="toggleHelp()" aria-label="あそびかた">？</button></div>
 <div class="hero"><button class="qm" onclick="toggleHelp()" aria-label="あそびかた">？</button>
 <div class="pcs"><i class="ico w tN"></i><i class="ico k tB"></i><i class="ico big w tQ"></i><i class="ico k tR"></i><i class="ico w tP"></i></div>
 <h1 class="ttl"><span class="a">キャプチャー</span><span class="b">スクランブル</span></h1>
-<div class="tag">キング無し！コマの奪い合い！</div></div>
-<div id="help" class="help"><p>限られた手数の中で多くのコマを奪った方が勝ち！</p><p>お互い3手指すごとにランダムで増える増援を使いこなそう！</p>
-<div class="ptl">コマの価値</div><div class="pts" style="margin-top:2px"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div>
+<div class="tag">キングなし、駒を奪い合え！</div></div>
+<div id="help" class="help"><p>少ない手数で多くの駒を奪え！</p><p>3手指すごとに増援が増えるぞ、使いこなせ</p>
+<div class="ptl">駒の価値</div><div class="pts" style="margin-top:2px"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div>
 <p class="sm">ポーンは前に1歩・斜め前で取り、端でクイーンに昇格します。</p></div>
 <div class="row seg" id="mode"><button class="opt on" onclick="setMode(0)">CPUと対戦</button><button class="opt" onclick="setMode(1)">オンライン対戦</button></div>
 <div id="cpuset">
@@ -244,13 +279,13 @@ body{background-attachment:fixed;background-repeat:no-repeat}
 <div id="onctl"><button class="go" onclick="randomMatch()">ランダムマッチ</button>
 <h3>部屋コードで遊ぶ</h3><button class="go3" onclick="createRoom()">部屋を作る</button>
 <div class="row" style="margin-top:10px"><input id="code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters"><button class="go2" onclick="joinRoom()">入る</button></div></div>
-<div id="wait" style="display:none"><h3 id="wh">部屋コード</h3><div id="wcode"></div><p class="rule" id="wtx"></p><button class="cx2" onclick="cancelWait()">キャンセル</button></div>
+<div id="wait" style="display:none"><h3 id="wh">部屋コード</h3><div class="wrow" id="wrow"><div id="wcode"></div><button id="cp" onclick="copyCode()"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>コピー</span></button></div><p class="rule" id="wtx"></p><button class="cx2" onclick="cancelWait()">キャンセル</button></div>
 <p class="rule" id="onmsg"></p>
 </div>
 <button class="cx" id="cx" onclick="$('st').style.display='none'">とじる</button></div></div>
 <script>
-const V={Q:9,R:5,B:3,N:3,P:1},G={Q:"♛",R:"♜",B:"♝",N:"♞",P:"♟\uFE0E"};
-const LB={Q:"クイーン撃破!!",R:"ルーク撃破!",B:"ビショップ撃破!",N:"ナイト撃破!",P:"ゲット!"};
+const V={Q:9,R:5,B:3,N:3,P:1};
+const NM={Q:"クイーン",R:"ルーク",B:"ビショップ",N:"ナイト",P:"ポーン"};
 let MAX=20,diff=1,gid=0,snaps=[];const DN=["イージー","ノーマル","ハード","プロ"];
 let b,turn,mv,sc,sel,last,fresh,over,busy,tg,st,fxq,isNew,mute=false,AC;
 let online=false,me="w",opp="k",flip=false,evFx=[],seqN=0,fbd=null,roomRef=null,roomCode="",R0=null,offMs=0,cid="",tickT=null,toSeq=-1,started=false,isHost=false,tickSec=0,inQueue=false,played=false,curRd=0,rmWait=false,rmEnd=0,rmTimer=null,rmOpp=false,roomGone=false,rsBusy=false;
@@ -259,7 +294,8 @@ const TURN_MS=30000,REM_MS=20000,N=s=>"{"+s+"}",D=v=>flip?7-v:v;
 const $=id=>document.getElementById(id),R=n=>Math.floor(Math.random()*n);
 const nm={w:"あなた",k:"CPU"};
 function setNames(){nm[me]="あなた";nm[opp]=online?"相手":"CPU";const sd=x=>x=="w"?"白":"黒";$("mn").textContent=`あなた(${sd(me)})`;$("cn").textContent=online?`相手(${sd(opp)})`:`CPU:${DN[diff]}(${sd(opp)})`}
-function snd(f,d=.1,ty="sine",v=.12,t0=0){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+t0;o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d)}catch(e){}}
+function snd(f,d=.1,ty="sine",v=.12,t0=0){if(mute)return;try{if(navigator.audioSession)navigator.audioSession.type="ambient";AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+t0;o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d)}catch(e){}}
+try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(e){}
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
 function empties(){const e=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(!b[r][c])e.push([r,c]);return e}
 // 初期配置の条件: クイーンは狙われない／お互い、狙われている駒は1つ以下
@@ -328,7 +364,14 @@ function spawn(s,t,fixed){
  if(!hit)return null;
  const[ty,[r,c]]=hit;b[r][c]={s,t:ty};fresh.push(r+","+c);evSp.push({s,t:ty,r,c});return ty;
 }
-// 9点差で+10%、15点差以上で+20%（相対）。ポーンとクイーンが出やすくなる（負けている側のみ）
+// 9点差で±10%、15点差以上で±20%（相対）。負けている側は、クイーンとルークが出やすく、ポーンは出にくくなる
+function randType(s){
+ const dif=s?(sc[s=="w"?"k":"w"]-sc[s]):0;
+ const bo=dif>=15?.2:dif>=9?.1+.1*(dif-9)/6:0;
+ const P=.28*(1-bo),R=.16*(1+bo),Q=.1*(1+bo),k=(1-P-R-Q)/.46;
+ const W=[["P",P],["N",.24*k],["B",.22*k],["R",R],["Q",Q]];
+ let x=Math.random();for(const[t,w]of W){x-=w;if(x<0)return t}return"Q";
+}
 function randType(s){
  const dif=s?(sc[s=="w"?"k":"w"]-sc[s]):0;
  const bo=dif>=15?.2:dif>=9?.1+.1*(dif-9)/6:0;
@@ -341,7 +384,7 @@ function apply(m,s){
  const[r,c,y,x]=m,cap=b[y][x],v=s=="w"?"k":"w";let t="";fresh=[];evFx=[];isNew=true;
  b[y][x]=b[r][c];b[r][c]=null;last=[[r,c],[y,x]];
  let pr=false;if(b[y][x].t=="P"&&(y==0||y==7)){b[y][x].t="Q";pr=true}
- if(cap){st[s]++;const val=V[cap.t];sc[s]+=val;t=`${N(s)}が${G[cap.t]}を取った +${val}`;const f={y,x,cap:cap.t,s,st:st[s],val};fxq.push(f);evFx.push(f)}
+ if(cap){st[s]++;const val=V[cap.t];sc[s]+=val;t=`${N(s)}が${NM[cap.t]}を取った +${val}`;const f={y,x,cap:cap.t,s,st:st[s],val};fxq.push(f);evFx.push(f)}
  else{st[s]=0;t=`${N(s)}が移動`}
  if(pr)t+="／ポーンがクイーンに昇格！";
  if(cap&&!hasQ(v)){spawn(v,"Q",true);t+=`（${N(v)}に新クイーン出現）`}
@@ -349,7 +392,7 @@ function apply(m,s){
 }
 function after(s,t){
  mv[s]++;
- if(mv[s]%3==0&&mv[s]<=MAX){const ty=spawn(s,randType(s));if(ty){t+=`／${N(s)}に${G[ty]}が出現！`;isNew=true}}
+ if(mv[s]%3==0&&mv[s]<=MAX){const ty=spawn(s,randType(s));if(ty){t+=`／${N(s)}に${NM[ty]}が出現！`;isNew=true}}
  pushHist(t);say(t);next();
 }
 function next(){
@@ -391,7 +434,7 @@ function tap(r,c){
  draw();
 }
 function updUndo(){
- const u=$("undo");u.textContent="↩ 待った";
+ const u=$("undo");
  u.disabled=!(turn=="w"&&!busy&&!over&&snaps.length>0);
 }
 function undo(){
@@ -447,7 +490,7 @@ function fx(q){
  let h=`<div class="rg" style="border-color:${col[0]}"></div><div class="p ${q.s=="w"?"k":"w"} t${q.cap}"></div>`;
  for(let i=0;i<n;i++){const a=Math.random()*6.283,dist=(big?70:45)+Math.random()*(big?90:55),sz=4+Math.random()*(big?9:6);
   h+=`<i style="--dx:${Math.cos(a)*dist}px;--dy:${Math.sin(a)*dist}px;width:${sz}px;height:${sz}px;margin:${-sz/2}px;background:${col[R(col.length)]}"></i>`}
- h+=`<em class="lb">${LB[q.cap]}</em>`;
+ h+=`<em class="lb ${q.s==me?"gw":"gl"}">${q.s==me?NM[q.cap]+(q.cap=="Q"?"撃破!!":"撃破!"):NM[q.cap]+"が…"}</em>`;
  d.innerHTML=h;L.appendChild(d);setTimeout(()=>d.remove(),1300);
  const lb=d.querySelector(".lb");   // 「○○撃破！」が画面の左右からはみ出すときは内側へずらす
  if(lb){const cr=d.getBoundingClientRect(),cx=cr.left+cr.width/2,hw=lb.offsetWidth*1.15/2,m=14,vw=document.documentElement.clientWidth;
@@ -464,18 +507,20 @@ function fx(q){
 }
 function finish(res){
  over=true;played=true;
- const who=online?"相手":"CPU";let t;
- if(res&&res.left)t="🎉 相手が退出しました。あなたの勝ち";
- else if(res)t=res.loser==me?"⏰ 時間切れで負け…":"🎉 相手が時間切れ！あなたの勝ち";
- else{const d=sc[me]-sc[opp];t=d>0?"🎉 あなたの勝ち！":d<0?`😵 ${who}の勝ち…`:"🤝 引き分け"}
- $("rt").textContent=t;$("rs").textContent=`あなた ${sc[me]} - ${sc[opp]} ${who}`;
+ const who=online?"相手":"CPU";let t,kind;
+ if(res&&res.left){t="相手が退出しました。あなたの勝ち";kind="win"}
+ else if(res){const w=res.loser!=me;t=w?"相手が時間切れ！あなたの勝ち":"時間切れで負け…";kind=w?"win":"lose"}
+ else{const d=sc[me]-sc[opp];kind=d>0?"win":d<0?"lose":"draw";t=d>0?"あなたの勝ち！":d<0?`${who}の勝ち…`:"引き分け"}
+ $("rt").textContent=t;$("rbox").className="rbox "+kind;
+ $("rpc").innerHTML=kind=="draw"?'<i class="rp w tP"></i><i class="rp k tP"></i>':`<i class="rp ${me} tQ"></i>`+(kind=="win"?'<u class="sp" style="left:26%;top:8%;animation-delay:-.1s"></u><u class="sp" style="right:24%;top:18%;animation-delay:-.5s"></u><u class="sp" style="left:34%;top:44%;animation-delay:-.8s;width:6px;height:6px"></u><u class="sp" style="right:32%;top:4%;animation-delay:-.3s;width:6px;height:6px"></u>':"");
+ $("rs").innerHTML=`<div class="rsc"><div><small>あなた</small><b>${sc[me]}</b></div><i>-</i><div><small>${who}</small><b>${sc[opp]}</b></div></div>`;
  const o1=$("ov1"),o2=$("ov2");$("ov3").style.display=hist.length>1?"":"none";
  clearInterval(rmTimer);rmWait=false;rmOpp=false;$("rm").textContent="";
  if(online){const gone=!!(res&&res.left);roomGone=gone;
   o1.textContent="続けて遊ぶ";o1.disabled=false;o1.style.display=gone?"none":"";o1.onclick=rematch;
   o2.textContent="トップへ";o2.style.display="";o2.onclick=goTop}
  else{o1.textContent="もう一度";o1.disabled=false;o1.style.display="";o1.onclick=init;o2.textContent="設定を変える";o2.style.display="";o2.onclick=openSet}
- const g=gid,won=res?(res.left||res.loser!=me):sc[me]>sc[opp];
+ const g=gid,won=kind=="win";
  const showDlg=()=>{if(g==gid){$("ov").style.display="flex";draw()}};
  setTimeout(()=>{if(g!=gid)return;if(won)winFx(showDlg);else showDlg()},res?300:1100);
  if(online&&isHost)setTimeout(()=>{if(g==gid&&online&&isHost&&roomRef){const r=roomRef;detach();r.remove().catch(()=>{})}},90000);
@@ -524,9 +569,16 @@ async function makeRoom(){
  }
  onMsg("部屋を作れませんでした。もう一度試してください",1);return null;
 }
+async function copyCode(){
+ const t=$("wcode").textContent,l=$("cp").querySelector("span");let ok=false;
+ try{await navigator.clipboard.writeText(t);ok=true}catch(e){
+  try{const ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;left:-9999px;top:0;opacity:0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,99);ok=document.execCommand("copy");ta.remove()}catch(e2){}
+ }
+ l.textContent=ok?"コピーしました":"コピーできません";clearTimeout(copyCode.t);copyCode.t=setTimeout(()=>{l.textContent="コピー"},1600);
+}
 function showWait(code){
  $("onctl").style.display="none";$("wait").style.display="";
- $("wcode").style.display=code?"":"none";$("wcode").textContent=code||"";
+ $("wrow").style.display=code?"flex":"none";$("wcode").textContent=code||"";
  $("wh").textContent=code?"部屋コード":"ランダムマッチ";
  $("wtx").innerHTML=code?"このコードを相手に伝えてください。<br>入室を待っています…":'<span class="spin"></span>対戦相手を探しています…<br>見つかると自動で始まります。';
  onMsg("");
@@ -671,7 +723,7 @@ function decRec(rec){const p=rec.split("|"),a=p[0];return{m:a=="----"?null:[+a[0
 // 手を打った後の共通処理（自分の手も相手の手も同じ流れ）
 function stepAfter(s,t){
  mv[s]++;
- if(mv[s]%3==0&&mv[s]<=MAX){const ty=spawn(s,randType(s));if(ty){t+=`／${N(s)}に${G[ty]}が出現！`;isNew=true}}
+ if(mv[s]%3==0&&mv[s]<=MAX){const ty=spawn(s,randType(s));if(ty){t+=`／${N(s)}に${NM[ty]}が出現！`;isNew=true}}
  const fin=mv.w>=MAX&&mv.k>=MAX;
  let nt=s=="w"?"k":"w";if(mv[nt]>=MAX)nt=s;
  turn=nt;seqN++;pushHist(t);return{t,fin};
@@ -723,7 +775,7 @@ function tick(){
  const mt=$("tmw"),ot=$("tmk");
  if(over||!dlNow){setTm(mt,"",0);setTm(ot,"",0);return}
  const rem=dlNow-sNow(),sec=Math.max(0,Math.ceil(rem/1000)),a=turn===me?mt:ot,z=a===mt?ot:mt;
- setTm(z,"",0);setTm(a,"⏱ "+sec,sec<=10);
+ setTm(z,"",0);setTm(a,sec+"秒",sec<=10);
  if(turn===me&&sec<=10&&sec>0&&tenSeq!==seqN){tenSeq=seqN;flashCd("あと10秒",1.0)}
  if(turn===me&&sec<=5&&sec>0&&tickSec!==sec){tickSec=sec;snd(900,.08,"square",.06);vib(10)}
  if(rem<-700&&toSeq!==seqN){toSeq=seqN;declareTimeout()}
@@ -756,7 +808,8 @@ function winFx(done){
  const w=$("win");let fin=false;
  const end=()=>{if(fin)return;fin=true;w.style.display="none";w.onclick=null;$("wconf").innerHTML="";done()};
  $("wsc").textContent=`あなた ${sc[me]} - ${sc[opp]} ${online?"相手":"CPU"}`;
- w.style.display="flex";w.onclick=end;
+ let canSkip=false;setTimeout(()=>{canSkip=true},1200);   // スコア表示(0.45秒後)から約0.7秒は無効
+ w.style.display="flex";w.onclick=()=>{if(canSkip)end()};
  const t=w.querySelector(".wt");t.style.animation="none";void t.offsetWidth;t.style.animation="";
  const cs=["#ffd23a","#fff","#4f8aff","#ff5a50","#ffb15a"];let h="";
  for(let i=0;i<44;i++)h+=`<i style="left:${R(100)}%;background:${cs[R(cs.length)]};--dx:${R(160)-80}px;--rot:${R(900)-450}deg;animation-duration:${1.5+Math.random()*1.3}s;animation-delay:${Math.random()*.7}s"></i>`;
