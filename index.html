@@ -246,6 +246,10 @@ button:disabled{pointer-events:none}
 .p.m.tN{--sl:10%;--sr:2%}
 #board.myturn .p.m::before{animation:pulse 1.8s ease-in-out infinite;animation-delay:calc(var(--ph,0) * -1s)}
 @keyframes pulse{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.14)}}
+/* 相手の駒の移動先（見るだけ）: 緑ではなく暗い色で、操作できない感じに */
+.c.pt::after{content:"";position:absolute;width:28%;height:28%;border-radius:50%;background:#3a3447b8;box-shadow:0 0 0 3px #3a344733;z-index:1}
+.c.pt.px::after{width:90%;height:90%;background:#2d263a1f;border:3px solid #3a3447b0;box-shadow:none}
+.c.pks::before{content:"";position:absolute;inset:0;background:#2a233859;z-index:0}
 </style></head><body>
 <div class="hud">
  <div class="pl cpu" id="pk"><div class="top"><small id="cn">CPU(黒)</small><small class="tm" id="tmk"></small></div><div class="sr"><b id="sk">0</b><small>残り<span id="rk">25</span>手</small></div></div>
@@ -290,7 +294,7 @@ const V={Q:9,R:5,B:3,N:3,P:1};
 const NM={Q:"クイーン",R:"ルーク",B:"ビショップ",N:"ナイト",P:"ポーン"};
 let MAX=20,diff=1,gid=0,snaps=[];const DN=["イージー","ノーマル","ハード","プロ"];
 let b,turn,mv,sc,sel,last,fresh,over,busy,tg,st,fxq,isNew,mute=false,AC;
-let online=false,me="w",opp="k",flip=false,evFx=[],seqN=0,fbd=null,roomRef=null,roomCode="",R0=null,offMs=0,cid="",tickT=null,toSeq=-1,started=false,isHost=false,tickSec=0,inQueue=false,played=false,curRd=0,rmWait=false,rmEnd=0,rmTimer=null,rmOpp=false,roomGone=false,rsBusy=false;
+let online=false,me="w",opp="k",flip=false,evFx=[],seqN=0,fbd=null,roomRef=null,roomCode="",R0=null,offMs=0,cid="",tickT=null,toSeq=-1,started=false,isHost=false,tickSec=0,inQueue=false,played=false,peek=null,pkt=[],curRd=0,rmWait=false,rmEnd=0,rmTimer=null,rmOpp=false,roomGone=false,rsBusy=false;
 let replaying=false,SPQ=[],evSp=[],dlNow=0,tenSeq=-1,hist=[],rvOn=false,rv=0;
 const TURN_MS=30000,REM_MS=20000,N=s=>"{"+s+"}",D=v=>flip?7-v:v;
 const $=id=>document.getElementById(id),R=n=>Math.floor(Math.random()*n);
@@ -321,7 +325,7 @@ function freshState(nb,rd){
  return{seq:0,turn:"w",b:nb.flat().map(p=>p?p.s+p.t:"--").join(","),mw:0,mk:0,sw:0,sk:0,tw:0,tk:0,last:"",fresh:"",fx:"[]",msg:"対戦開始！ 先手（白）から始まります",fin:false,deadline:0,rd};
 }
 function resetState(){
- gid++;snaps=[];turn="w";mv={w:0,k:0};sc={w:0,k:0};st={w:0,k:0};sel=null;last=[];fresh=[];fxq=[];evFx=[];isNew=false;over=false;busy=false;tg=[];seqN=0;
+ peek=null;pkt=[];gid++;snaps=[];turn="w";mv={w:0,k:0};sc={w:0,k:0};st={w:0,k:0};sel=null;last=[];fresh=[];fxq=[];evFx=[];isNew=false;over=false;busy=false;tg=[];seqN=0;
  b=freshBoard();hist=[];pushHist("開始時の盤面");
 }
 function initGame(){
@@ -383,7 +387,7 @@ function randType(s){
 }
 function hasQ(s){return b.some(row=>row.some(p=>p&&p.s==s&&p.t=="Q"))}
 function apply(m,s){
- const[r,c,y,x]=m,cap=b[y][x],v=s=="w"?"k":"w";let t="";fresh=[];evFx=[];isNew=true;
+ const[r,c,y,x]=m,cap=b[y][x],v=s=="w"?"k":"w";let t="";fresh=[];evFx=[];isNew=true;peek=null;pkt=[];
  b[y][x]=b[r][c];b[r][c]=null;last=[[r,c],[y,x]];
  let pr=false;if(b[y][x].t=="P"&&(y==0||y==7)){b[y][x].t="Q";pr=true}
  if(cap){st[s]++;const val=V[cap.t];sc[s]+=val;t=`${N(s)}が${NM[cap.t]}を取った +${val}`;const f={y,x,cap:cap.t,s,st:st[s],val};fxq.push(f);evFx.push(f)}
@@ -432,9 +436,11 @@ function tap(r,c){
  if(sel&&tg.some(t=>t[0]==r&&t[1]==c)){const m=[sel[0],sel[1],r,c];sel=null;tg=[];
   if(online){evSp=[];const t=apply(m,me);afterOnline(me,t,m);return}
   snaps.push({b:b.map(x=>x.map(p=>p&&{...p})),mv:{...mv},sc:{...sc},st:{...st},hl:hist.length});busy=true;after("w",apply(m,"w"));return}
- if(p&&p.s==me){if(sel&&sel[0]==r&&sel[1]==c){sel=null;tg=[]}else{sel=[r,c];tg=moves(b,r,c)}}
+ if(p&&p.s==me){peek=null;pkt=[];if(sel&&sel[0]==r&&sel[1]==c){sel=null;tg=[]}else{sel=[r,c];tg=moves(b,r,c)}}
+ else if(!sel&&p){   // 駒を選んでいない時に相手の駒をタップ → 動ける先を暗い色で見せる（操作はできない）
+  if(peek&&peek[0]==r&&peek[1]==c){peek=null;pkt=[]}else{peek=[r,c];pkt=moves(b,r,c)}}
  else{if(sel&&tg.some(t=>Math.abs(t[0]-r)<=1&&Math.abs(t[1]-c)<=1))return;   // 移動先候補のすぐ隣の押し間違いでは選択を解除しない
-  sel=null;tg=[]}
+  sel=null;tg=[];peek=null;pkt=[]}
  draw();
 }
 function updUndo(){
@@ -443,7 +449,7 @@ function updUndo(){
 }
 function undo(){
  if(over||busy||turn!="w"||!snaps.length)return;
- const o=snaps.pop();b=o.b;mv=o.mv;sc=o.sc;st=o.st;hist.length=o.hl;
+ peek=null;pkt=[];const o=snaps.pop();b=o.b;mv=o.mv;sc=o.sc;st=o.st;hist.length=o.hl;
  gid++;turn="w";sel=null;tg=[];last=[];fresh=[];fxq=[];isNew=false;busy=false;
  say("待った！ 1手戻しました");snd(420,.15,"triangle",.1);draw();countdown();
 }
@@ -457,13 +463,14 @@ function countdown(){
 }
 function say(t){$("msg").textContent=t.replace(/\{(w|k)\}/g,(_,x)=>nm[x])}
 function draw(){
+ if(peek&&(turn!=me||over)){peek=null;pkt=[]}
  const useNew=isNew,dl=fxq.length>0,fl=flip?-1:1;isNew=false;let h="";
  const fr=useNew?fresh.map(k=>{const[y,x]=k.split(",").map(Number);return{y,x,s:b[y][x]&&b[y][x].s}}):[];
  for(let dr=0;dr<8;dr++)for(let dc=0;dc<8;dc++){
   const r=flip?7-dr:dr,c=flip?7-dc:dc;
-  const p=b[r][c],isT=tg.some(t=>t[0]==r&&t[1]==c);
+  const p=b[r][c],isT=tg.some(t=>t[0]==r&&t[1]==c),isP=pkt.some(t=>t[0]==r&&t[1]==c);
   const isLast=last.some(l=>l[0]==r&&l[1]==c);
-  const cl=["c",(r+c)%2?"d":"l",isT?"t":"",isT&&p?"x":"",sel&&sel[0]==r&&sel[1]==c?"sel":"",isLast?"last":"",useNew&&fresh.includes(r+","+c)?(dl?"nw nwd":"nw"):""].join(" ");
+  const cl=["c",(r+c)%2?"d":"l",isT?"t":"",isT&&p?"x":"",isP?"pt":"",isP&&p?"px":"",peek&&peek[0]==r&&peek[1]==c?"pks":"",sel&&sel[0]==r&&sel[1]==c?"sel":"",isLast?"last":"",useNew&&fresh.includes(r+","+c)?(dl?"nw nwd":"nw"):""].join(" ");
   let pc="";
   if(p){const mvd=useNew&&last[1]&&last[1][0]==r&&last[1][1]==c;
    const sty=mvd?` style="--dx:calc(var(--cs)*${(last[0][1]-c)*fl});--dy:calc(var(--cs)*${(last[0][0]-r)*fl})"`:"";
@@ -712,7 +719,7 @@ function hostRestart(){
 function startOnline(side,S){
  played=true;online=true;me=side;opp=side=="w"?"k":"w";flip=side=="k";MAX=20;setNames();clearInterval(rmTimer);rmWait=false;rmOpp=false;roomGone=false;toSeq=-1;tickSec=0;$("rm").textContent="";$("ov1").disabled=false;
  gid++;snaps=[];sel=null;tg=[];last=[];over=false;busy=false;
- unpack(S);seqN=S.seq;dlNow=S.deadline;isNew=false;evFx=[];hist=[];pushHist("開始時の盤面");tenSeq=-1;exitReview();
+ peek=null;pkt=[];unpack(S);seqN=S.seq;dlNow=S.deadline;isNew=false;evFx=[];hist=[];pushHist("開始時の盤面");tenSeq=-1;exitReview();
  if(inQueue&&fbd){fbd.ref("waiting").onDisconnect().cancel();fbd.ref("rooms/"+roomCode).onDisconnect().cancel();inQueue=false}
  $("st").style.display="none";$("ov").style.display="none";$("undo").style.display="none";onMsg("");
  say(S.msg);draw();startMyTurn();
@@ -829,7 +836,7 @@ function rvJump(n){
 function renderReview(anim){
  const h=hist[rv];
  b=h.b.map(r=>r.map(p=>p&&{...p}));mv={...h.mv};sc={...h.sc};st={...h.st};last=h.last.map(x=>x.slice());fresh=h.fresh.slice();turn=h.turn;
- fxq=anim?h.fx.map(f=>({...f})):[];isNew=!!anim;sel=null;tg=[];
+ fxq=anim?h.fx.map(f=>({...f})):[];isNew=!!anim;sel=null;tg=[];peek=null;pkt=[];
  draw();say(h.t);
  $("rvn").textContent=rv==0?"開始時":`${rv} / ${hist.length-1}手目`;
  $("rvl").disabled=rv<=0;$("rvf").disabled=rv<=0;$("rvr").disabled=rv>=hist.length-1;$("rve").disabled=rv>=hist.length-1;
