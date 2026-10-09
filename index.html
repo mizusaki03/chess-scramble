@@ -250,6 +250,11 @@ button:disabled{pointer-events:none}
 .c.pt::after{content:"";position:absolute;width:28%;height:28%;border-radius:50%;background:#3a3447b8;box-shadow:0 0 0 3px #3a344733;z-index:1}
 .c.pt.px::after{width:90%;height:90%;background:#2d263a1f;border:3px solid #3a3447b0;box-shadow:none}
 .c.pks::before{content:"";position:absolute;inset:0;background:#2a233859;z-index:0}
+.resume{display:none;margin:0 0 12px;padding:12px;background:#eaf1ff;border:2px solid #2f6bff;border-radius:14px;text-align:left;font-size:13px;line-height:1.6;color:#1d2f5c;animation:born .4s}
+.resume p{margin:0}.resume .rt{font-size:14px;font-weight:900;margin-bottom:2px}
+.resume .rrow{display:flex;gap:8px;margin-top:10px}
+#st .resume button{flex:1;margin:0;padding:10px 4px;font-size:14px;font-weight:800;border:2px solid #2f6bff;border-radius:99px;background:#fff;color:#2358d6;animation:none}
+#st .resume button.y{background:linear-gradient(110deg,#3d7bff 0%,#2358d6 50%,#3d7bff 100%);background-size:220% 100%;color:#fff;animation:shine 5s ease-in-out infinite alternate}
 </style></head><body>
 <div class="hud">
  <div class="pl cpu" id="pk"><div class="top"><small id="cn">CPU(黒)</small><small class="tm" id="tmk"></small></div><div class="sr"><b id="sk">0</b><small>残り<span id="rk">25</span>手</small></div></div>
@@ -274,6 +279,7 @@ button:disabled{pointer-events:none}
 <div id="help" class="help"><p>少ない手数で多くの駒を奪え！</p><p>3手指すごとに増援が増えるぞ、使いこなせ</p>
 <div class="ptl">駒の価値</div><div class="pts" style="margin-top:2px"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div>
 <p class="sm">ポーンは前に1歩・斜め前で取り、端でクイーンに昇格します。</p></div>
+<div id="resume" class="resume"><p class="rt">前回の対戦が途中です</p><p id="rsum"></p><div class="rrow"><button class="y" onclick="resumeCpu()">続きから再開</button><button onclick="$('resume').style.display='none'">再開しない</button></div></div>
 <div class="row seg" id="mode"><button class="opt on" onclick="setMode(0)">CPUと対戦</button><button class="opt" onclick="setMode(1)">オンライン対戦</button></div>
 <div id="cpuset">
 <h3>AIの強さ</h3><div class="row" id="dif"><button class="opt" data-v="0">イージー</button><button class="opt on" data-v="1">ノーマル</button><button class="opt" data-v="2">ハード</button><button class="opt" data-v="3">プロ</button></div>
@@ -376,13 +382,6 @@ function randType(s){
  const bo=dif>=15?.2:dif>=9?.1+.1*(dif-9)/6:0;
  const P=.28*(1-bo),R=.16*(1+bo),Q=.1*(1+bo),k=(1-P-R-Q)/.46;
  const W=[["P",P],["N",.24*k],["B",.22*k],["R",R],["Q",Q]];
- let x=Math.random();for(const[t,w]of W){x-=w;if(x<0)return t}return"Q";
-}
-function randType(s){
- const dif=s?(sc[s=="w"?"k":"w"]-sc[s]):0;
- const bo=dif>=15?.2:dif>=9?.1+.1*(dif-9)/6:0;
- const P=.28*(1+bo),Q=.1*(1+bo),k=(1-P-Q)/.62;
- const W=[["P",P],["N",.24*k],["B",.22*k],["R",.16*k],["Q",Q]];
  let x=Math.random();for(const[t,w]of W){x-=w;if(x<0)return t}return"Q";
 }
 function hasQ(s){return b.some(row=>row.some(p=>p&&p.s==s&&p.t=="Q"))}
@@ -518,7 +517,7 @@ function fx(q){
  vib(big?[30,30,70]:mid?[25,20,35]:20);
 }
 function finish(res){
- over=true;played=true;
+ over=true;played=true;clearCpuSave();
  const who=online?"相手":"CPU";let t,kind;
  if(res&&res.left){t="相手が退出しました。あなたの勝ち";kind="win"}
  else if(res){const w=res.loser!=me;t=w?"相手が時間切れ！あなたの勝ち":"時間切れで負け…";kind=w?"win":"lose"}
@@ -717,7 +716,7 @@ function hostRestart(){
  },()=>{rsBusy=false},false);
 }
 function startOnline(side,S){
- played=true;online=true;me=side;opp=side=="w"?"k":"w";flip=side=="k";MAX=20;setNames();clearInterval(rmTimer);rmWait=false;rmOpp=false;roomGone=false;toSeq=-1;tickSec=0;$("rm").textContent="";$("ov1").disabled=false;
+ clearCpuSave();guardOn();played=true;online=true;me=side;opp=side=="w"?"k":"w";flip=side=="k";MAX=20;setNames();clearInterval(rmTimer);rmWait=false;rmOpp=false;roomGone=false;toSeq=-1;tickSec=0;$("rm").textContent="";$("ov1").disabled=false;
  gid++;snaps=[];sel=null;tg=[];last=[];over=false;busy=false;
  peek=null;pkt=[];unpack(S);seqN=S.seq;dlNow=S.deadline;isNew=false;evFx=[];hist=[];pushHist("開始時の盤面");tenSeq=-1;exitReview();
  if(inQueue&&fbd){fbd.ref("waiting").onDisconnect().cancel();fbd.ref("rooms/"+roomCode).onDisconnect().cancel();inQueue=false}
@@ -860,7 +859,7 @@ function curtain(fn){
  };
  return true;
 }
-function init(){curtain(initGame)}
+function init(){clearCpuSave();curtain(initGame)}
 // タイトル（トップ）画面へ戻す。オンライン後に設定を開くと盤面が崩れていたため、盤面ごと初期化する
 function goTop(){
  leaveOnline();$("ov").style.display="none";exitReview();
@@ -873,11 +872,75 @@ function setMode(i){
  $("cpuset").style.display=i?"none":"";$("onset").style.display=i?"":"none";
 }
 document.querySelectorAll("#dif .opt,#len .opt").forEach(x=>x.onclick=()=>{x.parentNode.querySelectorAll(".opt").forEach(y=>y.classList.remove("on"));x.classList.add("on")});
-function start(){played=true;diff=+document.querySelector("#dif .on").dataset.v;MAX=+document.querySelector("#len .on").dataset.v;curtain(()=>{leaveOnline();$("st").style.display="none";initGame()})}
+function start(){clearCpuSave();played=true;diff=+document.querySelector("#dif .on").dataset.v;MAX=+document.querySelector("#len .on").dataset.v;curtain(()=>{leaveOnline();$("st").style.display="none";initGame()})}
 function openSet(){if(!inQueue)onMsg("");$("st").classList.toggle("compact",played);if(played)$("help").style.display="none";$("cx").style.display="inline-block";$("st").style.display="flex"}
 $("rvl").onclick=()=>rvStep(-1);$("rvr").onclick=()=>rvStep(1);$("rvf").onclick=()=>rvJump(0);$("rve").onclick=()=>rvJump(hist.length-1);
 $("rv1").onclick=()=>$("ov1").click();$("rv2").onclick=()=>$("ov2").click();$("rv3").onclick=()=>{$("ov").style.display="flex"};
 document.addEventListener("keydown",e=>{if(!rvOn)return;if(e.key==="ArrowLeft")rvStep(-1);else if(e.key==="ArrowRight")rvStep(1);else if(e.key==="Home")rvJump(0);else if(e.key==="End")rvJump(hist.length-1)});
 {const mo=new MutationObserver(syncRv),cfg={attributes:true,childList:true,characterData:true,subtree:true};mo.observe($("ov1"),cfg);mo.observe($("ov2"),cfg);mo.observe($("rm"),cfg)}
-initGame();$("st").style.display="flex";
+
+// ===== 離脱対策 =====
+// オンライン対戦中: ブラウザの確認ポップアップ（戻る操作は履歴を1つ積んで拾う）
+let leaveOK=false,bk=false;
+function guardOn(){try{if(!bk){history.pushState({cs:1},"");bk=true}}catch(e){}}
+const onlineLive=()=>online&&started&&!over;
+window.addEventListener("beforeunload",e=>{
+ if(leaveOK||!onlineLive())return;
+ e.preventDefault();e.returnValue="対戦を中断して離れますか？";return e.returnValue;
+});
+window.addEventListener("popstate",()=>{
+ bk=false;
+ if(!onlineLive())return;
+ if(confirm("対戦を中断して離れますか？")){
+  leaveOK=true;history.back();
+  setTimeout(()=>{leaveOK=false;if(onlineLive())guardOn()},1000);   // 戻り先が無くて離れられなかった場合
+ }else guardOn();
+});
+// CPU戦: 離れるときに履歴をsessionStorageへ。次にタイトル画面へ来たとき再開を確認。対戦が始まったら削除
+const CPUKEY="cs_cpu";
+const encB=bd=>bd.flat().map(p=>p?p.s+p.t:"--").join(",");
+const decB=t=>{const c=t.split(",");return Array.from({length:8},(_,r)=>Array.from({length:8},(_,k)=>{const v=c[r*8+k];return v=="--"?null:{s:v[0],t:v[1]}}))};
+const cpuLive=()=>!online&&!over&&hist.length>1&&!rvOn;
+function clearCpuSave(){try{sessionStorage.removeItem(CPUKEY)}catch(e){}}
+function saveCpu(){
+ if(!cpuLive())return;
+ try{
+  sessionStorage.setItem(CPUKEY,JSON.stringify({v:1,diff,MAX,turn,b:encB(b),mv,sc,st,last,
+   hist:hist.map(h=>({b:encB(h.b),mv:h.mv,sc:h.sc,st:h.st,last:h.last,fresh:h.fresh,fx:h.fx,turn:h.turn,t:h.t})),
+   sn:snaps.map(x=>x.hl)}));
+ }catch(e){}
+}
+function loadCpuSave(){
+ try{const d=JSON.parse(sessionStorage.getItem(CPUKEY)||"null");return d&&d.v==1&&d.hist&&d.hist.length>1?d:null}catch(e){return null}
+}
+function resumeCpu(){
+ const d=loadCpuSave();$("resume").style.display="none";if(!d)return;
+ played=true;diff=d.diff;MAX=d.MAX;
+ document.querySelectorAll("#dif .opt").forEach(x=>x.classList.toggle("on",+x.dataset.v==diff));
+ document.querySelectorAll("#len .opt").forEach(x=>x.classList.toggle("on",+x.dataset.v==MAX));
+ clearCpuSave();
+ curtain(()=>{
+  leaveOnline();online=false;me="w";opp="k";flip=false;setNames();
+  peek=null;pkt=[];gid++;sel=null;tg=[];fxq=[];evFx=[];isNew=false;over=false;busy=false;
+  b=decB(d.b);mv=d.mv;sc=d.sc;st=d.st;turn=d.turn;last=d.last||[];fresh=[];
+  hist=d.hist.map(h=>({...h,b:decB(h.b)}));
+  snaps=(d.sn||[]).filter(n=>hist[n-1]).map(n=>{const h=hist[n-1];return{b:h.b.map(r=>r.map(p=>p&&{...p})),mv:{...h.mv},sc:{...h.sc},st:{...h.st},hl:n}});
+  $("st").style.display="none";$("ov").style.display="none";$("undo").style.display="";
+  say("前回の対戦を再開しました");draw();
+  const g=gid;
+  if(!allMoves(b,turn).length){const s=turn;setTimeout(()=>{if(g!=gid)return;fresh=[];last=[];after(s,`${N(s)}は動かせずパス`)},600)}
+  else if(turn=="k"){busy=true;setTimeout(()=>{if(g==gid)cpu()},800)}
+  else{busy=false;countdown()}
+  updUndo();
+ });
+}
+function offerResume(){
+ const d=loadCpuSave();if(!d)return;
+ $("rsum").textContent=`CPU:${DN[d.diff]}・${d.MAX}手ずつ ／ あなた ${d.sc.w} - ${d.sc.k} CPU（あなた${d.mv.w}手目まで）`;
+ $("resume").style.display="block";
+}
+window.addEventListener("pagehide",saveCpu);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveCpu();else if(cpuLive())clearCpuSave()});
+window.addEventListener("pageshow",e=>{if(e.persisted&&cpuLive())clearCpuSave()});
+initGame();$("st").style.display="flex";offerResume();
 </script></body></html>
