@@ -250,11 +250,18 @@ button:disabled{pointer-events:none}
 .c.pt::after{content:"";position:absolute;width:28%;height:28%;border-radius:50%;background:#3a3447b8;box-shadow:0 0 0 3px #3a344733;z-index:1}
 .c.pt.px::after{width:90%;height:90%;background:#2d263a1f;border:3px solid #3a3447b0;box-shadow:none}
 .c.pks::before{content:"";position:absolute;inset:0;background:#2a233859;z-index:0}
-.resume{display:none;margin:0 0 12px;padding:12px;background:#eaf1ff;border:2px solid #2f6bff;border-radius:14px;text-align:left;font-size:13px;line-height:1.6;color:#1d2f5c;animation:born .4s}
-.resume p{margin:0}.resume .rt{font-size:14px;font-weight:900;margin-bottom:2px}
-.resume .rrow{display:flex;gap:8px;margin-top:10px}
-#st .resume button{flex:1;margin:0;padding:10px 4px;font-size:14px;font-weight:800;border:2px solid #2f6bff;border-radius:99px;background:#fff;color:#2358d6;animation:none}
-#st .resume button.y{background:linear-gradient(110deg,#3d7bff 0%,#2358d6 50%,#3d7bff 100%);background-size:220% 100%;color:#fff;animation:shine 5s ease-in-out infinite alternate}
+#resume{display:none;position:fixed;inset:0;z-index:50;background:#000b;align-items:center;justify-content:center;padding:14px;overflow:auto}
+#resume .rcard{width:min(92vw,340px);margin:auto;padding:22px 18px 18px;border-radius:22px;background:linear-gradient(160deg,#fff,#f2ead8);color:#222;text-align:center;box-shadow:0 14px 36px #0008;animation:born .45s}
+#resume .rt{margin:0 0 8px;font-size:19px;font-weight:900;color:#5a3820}
+#resume #rsum{margin:0;font-size:14px;line-height:1.7;font-weight:700}
+#resume .rrow{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+#resume button{margin:0;padding:13px 4px;font-size:16px;font-weight:800;border:2px solid #2358d6;border-radius:99px;background:#fff;color:#2358d6}
+#resume button.y{border:0;color:#fff;background:linear-gradient(110deg,#3d7bff 0%,#2358d6 50%,#3d7bff 100%);background-size:220% 100%;animation:shine 5s ease-in-out infinite alternate}
+/* 誤爆対策A: 下スワイプの更新・端の戻るスワイプ・バウンスを抑える */
+html,body{overscroll-behavior:none}
+/* 誤爆対策D: 画面の左右の端（ブラウザの「戻る」スワイプの開始位置）を透明な帯でふさぐ */
+.eg{position:fixed;top:0;bottom:0;width:10px;z-index:100;touch-action:none;background:transparent}
+.eg.l{left:0}.eg.r{right:0}
 </style></head><body>
 <div class="hud">
  <div class="pl cpu" id="pk"><div class="top"><small id="cn">CPU(黒)</small><small class="tm" id="tmk"></small></div><div class="sr"><b id="sk">0</b><small>残り<span id="rk">25</span>手</small></div></div>
@@ -269,8 +276,10 @@ button:disabled{pointer-events:none}
 <div id="rvst"></div></div>
 <div id="win"><div class="wt">WIN</div><div class="ws" id="wsc"></div><div id="wconf"></div></div>
 <div id="cur" class="w tQ"></div>
+<div class="eg l"></div><div class="eg r"></div>
 <div id="tele">相手の手番を待っています…</div>
 <div id="ov"><div class="rbox draw" id="rbox"><div class="rhero"><div class="rpc" id="rpc"></div><h2 id="rt"></h2></div><div id="rs"></div><p id="rm" class="rmsg"></p><div class="ovb"><button id="ov1" onclick="init()">もう一度</button><button id="ov3" onclick="enterReview()">振り返る</button><button id="ov2" onclick="openSet()" style="background:#8a8a8a">設定を変える</button></div></div></div>
+<div id="resume"><div class="rcard"><p class="rt">前回の対戦が途中です</p><p id="rsum"></p><div class="rrow"><button class="y" onclick="resumeCpu()">続きから再開</button><button onclick="$('resume').style.display='none'">再開しない</button></div></div></div>
 <div id="st"><div class="box"><div class="chead"><h2>キャプチャー スクランブル</h2><button class="qm2" onclick="toggleHelp()" aria-label="あそびかた">？</button></div>
 <div class="hero"><button class="qm" onclick="toggleHelp()" aria-label="あそびかた">？</button>
 <div class="pcs"><i class="ico w tN"></i><i class="ico k tB"></i><i class="ico big w tQ"></i><i class="ico k tR"></i><i class="ico w tP"></i></div>
@@ -279,7 +288,6 @@ button:disabled{pointer-events:none}
 <div id="help" class="help"><p>少ない手数で多くの駒を奪え！</p><p>3手指すごとに増援が増えるぞ、使いこなせ</p>
 <div class="ptl">駒の価値</div><div class="pts" style="margin-top:2px"><span><i class="lgi w tQ"></i>9</span><span><i class="lgi w tR"></i>5</span><span><i class="lgi w tB"></i>3</span><span><i class="lgi w tN"></i>3</span><span><i class="lgi w tP"></i>1</span></div>
 <p class="sm">ポーンは前に1歩・斜め前で取り、端でクイーンに昇格します。</p></div>
-<div id="resume" class="resume"><p class="rt">前回の対戦が途中です</p><p id="rsum"></p><div class="rrow"><button class="y" onclick="resumeCpu()">続きから再開</button><button onclick="$('resume').style.display='none'">再開しない</button></div></div>
 <div class="row seg" id="mode"><button class="opt on" onclick="setMode(0)">CPUと対戦</button><button class="opt" onclick="setMode(1)">オンライン対戦</button></div>
 <div id="cpuset">
 <h3>AIの強さ</h3><div class="row" id="dif"><button class="opt" data-v="0">イージー</button><button class="opt on" data-v="1">ノーマル</button><button class="opt" data-v="2">ハード</button><button class="opt" data-v="3">プロ</button></div>
@@ -937,8 +945,9 @@ function resumeCpu(){
 function offerResume(){
  const d=loadCpuSave();if(!d)return;
  $("rsum").textContent=`CPU:${DN[d.diff]}・${d.MAX}手ずつ ／ あなた ${d.sc.w} - ${d.sc.k} CPU（あなた${d.mv.w}手目まで）`;
- $("resume").style.display="block";
+ $("resume").style.display="flex";
 }
+document.querySelectorAll(".eg").forEach(e=>{const f=ev=>{if(ev.cancelable)ev.preventDefault()};e.addEventListener("touchstart",f,{passive:false});e.addEventListener("touchmove",f,{passive:false})});
 window.addEventListener("pagehide",saveCpu);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveCpu();else if(cpuLive())clearCpuSave()});
 window.addEventListener("pageshow",e=>{if(e.persisted&&cpuLive())clearCpuSave()});
