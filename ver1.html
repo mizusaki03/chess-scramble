@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>奪い合いチェス</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f1ea;--fg:#222;--card:#fff;--lt:#f0d9b5;--dk:#b58863;--me:#2a6df4;--cpu:#d6453d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1b19;--fg:#eee;--card:#2a2926}}
+:root[data-theme="dark"]{--bg:#1c1b19;--fg:#eee;--card:#2a2926}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans",sans-serif;display:flex;flex-direction:column;align-items:center;padding:10px;-webkit-user-select:none;user-select:none}
+.hud{width:min(96vw,520px);display:flex;gap:8px;margin-bottom:8px}
+.pl{flex:1;background:var(--card);border-radius:10px;padding:8px 10px;border-bottom:4px solid transparent}
+.pl.on{border-color:currentColor}
+.pl.me{color:var(--me)}.pl.cpu{color:var(--cpu)}
+.pl b{font-size:26px;display:block;line-height:1.1}.pl small{color:var(--fg);opacity:.7}
+#board{width:min(96vw,520px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);border-radius:6px;overflow:hidden;box-shadow:0 4px 14px #0004}
+.c{display:flex;align-items:center;justify-content:center;font-size:min(9vw,46px);position:relative;cursor:pointer;line-height:1}
+.c.l{background:var(--lt)}.c.d{background:var(--dk)}
+.c.last{box-shadow:inset 0 0 0 100px #ffe60055}
+.c.sel{box-shadow:inset 0 0 0 100px #3fa7ff88}
+.c.t::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:#1a8a3f99}
+.c.t.x::after{width:92%;height:92%;background:none;border:4px solid #e0302099}
+.c.nw span{animation:pop .6s}
+@keyframes pop{0%{transform:scale(0) rotate(-90deg)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+.w{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 0 3px #000,0 1px 1px #000}
+.k{color:#111;text-shadow:0 0 1px #fff8}
+#msg{margin:10px 0 4px;min-height:24px;font-size:15px;text-align:center}
+.sub{font-size:12px;opacity:.7;text-align:center;max-width:520px}
+#ov{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:9}
+#ov div{background:var(--card);padding:26px 30px;border-radius:16px;text-align:center}
+#ov h2{margin:0 0 6px;font-size:28px}
+button{font-size:17px;padding:10px 22px;border:0;border-radius:10px;background:var(--me);color:#fff;margin-top:12px}
+</style></head><body>
+<div class="hud">
+ <div class="pl cpu" id="pk"><small>CPU(黒) 残り<span id="rk">25</span>手</small><b id="sk">0</b></div>
+ <div class="pl me" id="pw"><small>あなた(白) 残り<span id="rw">25</span>手</small><b id="sw">0</b></div>
+</div>
+<div id="board"></div>
+<div id="msg"></div>
+<div class="sub">駒を取るとポイント: ♛=9 ♝=3 ♞=3 ／ 2手ごとに自分の駒が盤面のランダムな場所に出現</div>
+<div id="ov"><div><h2 id="rt"></h2><p id="rs"></p><button onclick="init()">もう一度</button></div></div>
+<script>
+const V={Q:9,B:3,N:3},G={Q:"♛",B:"♝",N:"♞"},MAX=25;
+let b,turn,mv,sc,sel,last,fresh,over,busy,tg;
+const $=id=>document.getElementById(id),R=n=>Math.floor(Math.random()*n);
+const nm={w:"あなた",k:"CPU"};
+function empties(){const e=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(!b[r][c])e.push([r,c]);return e}
+function init(){
+ b=Array.from({length:8},()=>Array(8).fill(null));
+ turn="w";mv={w:0,k:0};sc={w:0,k:0};sel=null;last=[];fresh=[];over=false;busy=false;tg=[];
+ for(const s of["w","k"])for(const t of"QBBNN"){let r,c;do{r=(s=="w"?5:0)+R(3);c=R(8)}while(b[r][c]);b[r][c]={s,t}}
+ $("ov").style.display="none";say("あなたの番です（白・下側）");draw();
+}
+function moves(bd,r,c){
+ const p=bd[r][c],o=[];if(!p)return o;
+ if(p.t=="N"){for(const[a,d]of[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]){const y=r+a,x=c+d;if(y<0||x<0||y>7||x>7)continue;if(!bd[y][x]||bd[y][x].s!=p.s)o.push([y,x])}return o}
+ const D=[];if(p.t!="B")D.push([1,0],[-1,0],[0,1],[0,-1]);if(p.t!="N")D.push([1,1],[1,-1],[-1,1],[-1,-1]);
+ for(const[a,d]of D){let y=r+a,x=c+d;while(y>=0&&x>=0&&y<8&&x<8){const q=bd[y][x];if(q){if(q.s!=p.s)o.push([y,x]);break}o.push([y,x]);y+=a;x+=d}}
+ return o;
+}
+function allMoves(bd,s){const o=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(bd[r][c]&&bd[r][c].s==s)for(const t of moves(bd,r,c))o.push([r,c,t[0],t[1]]);return o}
+function attacked(bd,by,r,c){return allMoves(bd,by).some(m=>m[2]==r&&m[3]==c)}
+function spawn(s,t,safe){
+ let e=empties();if(!e.length)return;
+ if(safe){const a=e.filter(([r,c])=>!attacked(b,s=="w"?"k":"w",r,c));if(a.length)e=a}
+ const[r,c]=e[R(e.length)];b[r][c]={s,t};fresh.push(r+","+c);
+}
+function randType(){const x=Math.random();return x<.45?"N":x<.85?"B":"Q"}
+function hasQ(s){return b.some(row=>row.some(p=>p&&p.s==s&&p.t=="Q"))}
+function apply(m,s){
+ const[r,c,y,x]=m,cap=b[y][x];let t="";fresh=[];
+ if(cap){sc[s]+=V[cap.t];t=`${nm[s]}が${G[cap.t]}を取った +${V[cap.t]}`}
+ b[y][x]=b[r][c];b[r][c]=null;last=[[r,c],[y,x]];
+ const v=s=="w"?"k":"w";
+ if(cap&&!hasQ(v)){spawn(v,"Q",true);t+=`（${nm[v]}に新クイーン出現）`}
+ return t||`${nm[s]}が移動`;
+}
+function after(s,t){
+ mv[s]++;
+ if(mv[s]%2==0&&mv[s]<=MAX){spawn(s,randType(),false);t+=` ／ ${nm[s]}の駒が出現！`}
+ say(t);next();
+}
+function next(){
+ if(mv.w>=MAX&&mv.k>=MAX)return finish();
+ turn=turn=="w"?"k":"w";
+ if(mv[turn]>=MAX){turn=turn=="w"?"k":"w"}
+ if(!allMoves(b,turn).length){draw();setTimeout(()=>after(turn,`${nm[turn]}は動かせずパス`),500);return}
+ draw();
+ if(turn=="k"){busy=true;setTimeout(cpu,650)}else{busy=false}
+}
+function cpu(){
+ const ms=allMoves(b,"k");let best=null,bs=-1e9;
+ for(const m of ms){
+  const cap=b[m[2]][m[3]],g=cap?V[cap.t]:0;
+  const nb=b.map(r=>r.slice());nb[m[2]][m[3]]=nb[m[0]][m[1]];nb[m[0]][m[1]]=null;
+  let thr=0;for(const o of allMoves(nb,"w")){const q=nb[o[2]][o[3]];if(q&&q.s=="k")thr=Math.max(thr,V[q.t])}
+  const s=g*1.1-thr+Math.random()*.6;
+  if(s>bs){bs=s;best=m}
+ }
+ after("k",apply(best,"k"));
+}
+function tap(r,c){
+ if(over||busy||turn!="w")return;
+ const p=b[r][c];
+ if(sel&&tg.some(t=>t[0]==r&&t[1]==c)){busy=true;const m=[sel[0],sel[1],r,c];sel=null;tg=[];after("w",apply(m,"w"));return}
+ if(p&&p.s=="w"){sel=[r,c];tg=moves(b,r,c)}else{sel=null;tg=[]}
+ draw();
+}
+function say(t){$("msg").textContent=t}
+function draw(){
+ let h="";
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+  const p=b[r][c],k=r+","+c;
+  const isT=tg.some(t=>t[0]==r&&t[1]==c);
+  const cl=["c",(r+c)%2?"d":"l",isT?"t":"",isT&&p?"x":"",sel&&sel[0]==r&&sel[1]==c?"sel":"",last.some(l=>l[0]==r&&l[1]==c)?"last":"",fresh.includes(k)?"nw":""].join(" ");
+  h+=`<div class="${cl}" onclick="tap(${r},${c})">${p?`<span class="${p.s=="w"?"w":"k"}">${G[p.t]}</span>`:""}</div>`;
+ }
+ $("board").innerHTML=h;
+ $("sw").textContent=sc.w;$("sk").textContent=sc.k;
+ $("rw").textContent=MAX-mv.w;$("rk").textContent=MAX-mv.k;
+ $("pw").classList.toggle("on",turn=="w"&&!over);$("pk").classList.toggle("on",turn=="k"&&!over);
+}
+function finish(){
+ over=true;draw();
+ const d=sc.w-sc.k;
+ $("rt").textContent=d>0?"🎉 あなたの勝ち！":d<0?"😵 CPUの勝ち…":"🤝 引き分け";
+ $("rs").textContent=`あなた ${sc.w} - ${sc.k} CPU`;
+ $("ov").style.display="flex";
+}
+init();
+</script></body></html>
